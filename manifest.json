@@ -1,8 +1,10 @@
 {
   "name": "تطبيق الراصد الذكي للطقس",
   "short_name": "الراصد الذكي",
+  "id": "/?source=pwa",
   "start_url": ".",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0D1B2A",
   "theme_color": "#415A77",
   "description": "تطبيق ويب تقدمي لرصد الطقس.",
