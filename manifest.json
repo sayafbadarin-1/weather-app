@@ -10,12 +10,12 @@
   "description": "تطبيق ويب تقدمي لرصد الطقس.",
   "icons": [
     {
-      "src": "https://www.pinclipart.com/picdir/middle/525-5252876_weather-icon-png-transparent-background-weather-app-icon.png",
+      "src": "https://cdn-icons-png.flaticon.com/192/1163/1163661.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://www.pinclipart.com/picdir/middle/525-5252876_weather-icon-png-transparent-background-weather-app-icon.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/1163/1163661.png",
       "type": "image/png",
       "sizes": "512x512"
     }
