@@ -1,0 +1,333 @@
+/* 1. تعريف متغيرات الألوان لكلا الوضعين */
+:root {
+    /* الوضع الفاتح (الافتراضي) */
+    --bg-color: linear-gradient(135deg, #89CFF0, #FFD700);
+    --card-bg-color: rgba(255, 255, 255, 0.35);
+    --text-color: #002244;
+    --button-bg-color: #0047AB;
+    --button-text-color: #FFFFFF;
+    --shadow-color: rgba(31, 38, 135, 0.37);
+}
+
+body.dark-mode {
+    /* الوضع الليلي */
+    --bg-color: linear-gradient(135deg, #0D1B2A, #415A77);
+    --card-bg-color: rgba(255, 255, 255, 0.1);
+    --text-color: #E0E1DD;
+    --button-bg-color: #778DA9;
+    --button-text-color: #0D1B2A;
+    --shadow-color: rgba(0, 0, 0, 0.37);
+}
+
+/* 2. التنسيقات الأساسية */
+body {
+    font-family: 'Tajawal', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg-color);
+    transition: background 0.5s ease-in-out;
+    color: var(--text-color);
+}
+
+/* 3. تنسيق الأزرار العلوية */
+.top-controls {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+#theme-toggle-btn, #lang-toggle-btn {
+    background: var(--card-bg-color);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    color: var(--text-color);
+    font-family: 'Tajawal', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#lang-toggle-btn {
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* 4. تنسيقات المحتوى الرئيسي والفوتر */
+.main-content {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 20px 20px 20px;
+    box-sizing: border-box;
+    flex-grow: 1;
+}
+
+.glass-card {
+    background: var(--card-bg-color);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 var(--shadow-color);
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.main-temp { 
+    font-size: 6rem; 
+    font-weight: 700; 
+    color: var(--text-color); 
+    text-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    position: relative; 
+    line-height: 1; 
+    margin-bottom: 15px; 
+}
+
+.temp-unit { 
+    font-size: 2.5rem; 
+    position: absolute; 
+    top: 10px; 
+    right: -40px; 
+}
+
+.main-gauge { 
+    width: 250px; 
+    height: 250px; 
+    border-radius: 50%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    align-self: center; 
+}
+
+.gauge-label { 
+    font-size: 1.2rem; 
+    font-weight: 400; 
+}
+
+.gauge-value { 
+    font-size: 4rem; 
+    font-weight: 700; 
+    margin: 10px 0; 
+}
+
+.gauge-unit { 
+    font-size: 1.2rem; 
+}
+
+.details-grid { 
+    display: flex; 
+    justify-content: space-between; 
+    gap: 10px; 
+    width: 100%; 
+}
+
+.detail-item { 
+    width: 100%; 
+}
+
+/* تنسيق خاص لكارت مدى الرؤية */
+.visibility-card {
+    width: calc(100% - 10px);
+    margin: 0 auto 15px auto;
+}
+
+/* تنسيق النصوص داخل البطاقات */
+.card-label {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.location-card { 
+    font-size: 1.1rem; 
+    font-weight: 700; 
+}
+
+.archive-btn { 
+    width: 100%; 
+    padding: 15px; 
+    border-radius: 15px; 
+    border: none; 
+    background-color: var(--button-bg-color); 
+    color: var(--button-text-color); 
+    font-family: 'Tajawal', sans-serif; 
+    font-size: 1.2rem; 
+    font-weight: 700; 
+    cursor: pointer; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    transition: transform 0.2s, box-shadow 0.2s; 
+}
+
+.archive-btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); 
+}
+
+.navigation-links { 
+    display: flex; 
+    justify-content: space-around; 
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.nav-link { 
+    color: var(--text-color); 
+    font-weight: 700; 
+    text-decoration: none; 
+    padding: 8px 15px; 
+    background: var(--card-bg-color); 
+    border-radius: 10px; 
+    transition: transform 0.2s; 
+}
+
+.nav-link:hover { 
+    transform: scale(1.05); 
+}
+
+.app-footer {
+    width: 100%;
+    text-align: center;
+    padding: 10px 20px;
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+/* تنسيقات خاصة بالصفحات الأخرى */
+.page-header { 
+    color: var(--text-color); 
+    width: 100%; 
+    text-align: center;
+}
+
+.history-header, .forecast-header { 
+    width: 100%; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+
+.history-list, .forecast-list { 
+    width: 100%; 
+    flex-grow: 1; 
+    overflow-y: auto; 
+}
+
+.chart-container { 
+    width: 100%; 
+    padding: 15px; 
+    margin-bottom: 20px; 
+    background: var(--card-bg-color); 
+    backdrop-filter: blur(10px); 
+    border-radius: 15px; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+}
+
+.day-card, .reading-card { 
+    background: var(--card-bg-color); 
+    backdrop-filter: blur(10px); 
+    border-radius: 15px; 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.day-card { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+}
+
+.day-info { 
+    text-align: right; 
+}
+
+.day-name { 
+    font-size: 1.4rem; 
+    font-weight: 700; 
+}
+
+.day-desc { 
+    font-size: 1rem; 
+    opacity: 0.8; 
+}
+
+.day-icon { 
+    font-size: 3.5rem; 
+}
+
+.day-temps { 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    text-align: left; 
+    direction: ltr; 
+}
+
+.reading-card { 
+    position: relative; 
+}
+
+.delete-icon { 
+    position: absolute; 
+    top: 10px; 
+    left: 10px; 
+    cursor: pointer; 
+    font-size: 1.5rem; 
+    color: #ff6b6b; 
+    user-select: none; 
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media (max-width: 480px) {
+    .main-temp {
+        font-size: 5rem;
+    }
+
+    .temp-unit {
+        font-size: 2rem;
+        right: -30px;
+    }
+
+    .main-gauge {
+        width: 200px;
+        height: 200px;
+    }
+
+    .gauge-value {
+        font-size: 3rem;
+    }
+
+    .card-value {
+        font-size: 1.5rem;
+    }
+}

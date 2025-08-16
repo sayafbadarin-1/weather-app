@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">راصد - محطة الطقس</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.openweathermap.org">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="top-controls">
+        <div class="theme-switcher"><button id="theme-toggle-btn">🌙</button></div>
+        <div class="language-switcher"><button id="lang-toggle-btn">EN</button></div>
+    </div>
+    <main class="main-content">
+        <div class="main-temp"><span id="temp-display">--</span><span class="temp-unit">°C</span></div>
+        <div class="glass-card main-gauge"><div id="pressure-label" class="gauge-label"></div><div id="pressure-display" class="gauge-value">----</div><div class="gauge-unit">hPa</div></div>
+        
+        <!-- الشبكة الأولى: الرطوبة والرياح -->
+        <div class="details-grid">
+            <div class="glass-card detail-item">
+                <div id="humidity-label" class="card-label"></div>
+                <div id="humidity-display" class="card-value">-- %</div>
+            </div>
+            <div class="glass-card detail-item">
+                <div id="wind-label" class="card-label"></div>
+                <div id="wind-display" class="card-value">-- m/s</div>
+            </div>
+        </div>
+        
+        <!-- الشبكة الثانية: شروق وغروب الشمس -->
+        <div class="details-grid">
+            <div class="glass-card detail-item">
+                <div id="sunrise-label" class="card-label"></div>
+                <div id="sunrise-display" class="card-value">--:--</div>
+            </div>
+            <div class="glass-card detail-item">
+                <div id="sunset-label" class="card-label"></div>
+                <div id="sunset-display" class="card-value">--:--</div>
+            </div>
+        </div>
+        
+        <!-- مدى الرؤية -->
+        <div class="glass-card detail-item visibility-card">
+            <div id="visibility-label" class="card-label"></div>
+            <div id="visibility-display" class="card-value">-- km</div>
+        </div>
+        
+        <div class="location-card glass-card"><span id="location-display"></span></div>
+        <div class="navigation-links"><a id="forecast-link" href="forecast.html" class="nav-link"></a><a id="history-link" href="history.html" class="nav-link"></a></div>
+        <button id="archive-button" class="archive-btn"></button>
+    </main>
+    <footer class="app-footer">
+        <p>تم صنع هذا الموقع بواسطة الطالب : سياف عادل البدارين - مدرسة ذكور البخاري الاساسية / السموع</p>
+    </footer>
+    <script src="translations.js"></script>
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('/service-worker.js'); });
+        }
+    </script>
+</body>
+</html>

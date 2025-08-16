@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">سجل القراءات</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container { width: 100%; padding: 15px; margin-bottom: 20px; background: var(--card-bg-color); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .history-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .history-list { width: 100%; flex-grow: 1; overflow-y: auto; padding: 5px; }
+        .reading-card { background: var(--card-bg-color); border-radius: 15px; padding: 15px; margin-bottom: 15px; position: relative; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: right; }
+        .delete-icon { position: absolute; top: 10px; left: 10px; cursor: pointer; font-size: 1.5rem; color: #ff6b6b; user-select: none; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; }
+        .reading-header { font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; }
+        .reading-details p { margin: 5px 0; }
+        #no-readings { font-size: 1.2rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <div class="theme-switcher"><button id="theme-toggle-btn">🌙</button></div>
+        <div class="language-switcher"><button id="lang-toggle-btn">EN</button></div>
+    </div>
+
+    <main class="main-content">
+        <div id="chart-section" class="chart-container" style="display: none;"><canvas id="pressureChart"></canvas></div>
+        <div class="history-header">
+            <h2 id="history-title" class="page-header" style="margin: 0;"></h2>
+            <button id="clear-history-btn" class="archive-btn" style="background: #ff4d4d; width: auto; padding: 8px 12px; font-size: 0.9rem;"></button>
+        </div>
+        <div id="history-list" class="history-list">
+            <p id="no-readings" style="text-align: center;"></p>
+        </div>
+        <a id="back-button" href="index.html" class="archive-btn" style="text-decoration: none; text-align: center; margin-top: auto; width: 100%; box-sizing: border-box; flex-shrink: 0;"></a>
+    </main>
+
+    <footer class="app-footer">
+        <p>تم صنع هذا الموقع بواسطة الطالب : سياف عادل البدارين - مدرسة ذكور البخاري الاساسية / السموع</p>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentLang = localStorage.getItem('language') || 'ar';
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            
+            const pageTitle = document.getElementById('page-title');
+            const historyTitle = document.getElementById('history-title');
+            const clearHistoryBtn = document.getElementById('clear-history-btn');
+            const backButton = document.getElementById('back-button');
+            const historyList = document.getElementById('history-list');
+            const chartSection = document.getElementById('chart-section');
+            const ctx = document.getElementById('pressureChart').getContext('2d');
+            let pressureChart = null;
+
+            function updateUIText() {
+                const t = translations[currentLang];
+                document.documentElement.lang = currentLang;
+                document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+                pageTitle.textContent = `${t.historyTitle} - ${t.pageTitle.split(' - ')[0]}`;
+                historyTitle.textContent = t.historyTitle;
+                clearHistoryBtn.textContent = t.clearHistoryButton;
+                backButton.textContent = t.backButton;
+                document.getElementById('lang-toggle-btn').textContent = currentLang === 'ar' ? 'EN' : 'ع';
+                loadReadingsAndChart();
+            }
+
+            function applyTheme(theme) {
+                const themeBtn = document.getElementById('theme-toggle-btn');
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeBtn.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    themeBtn.textContent = '🌙';
+                }
+            }
+
+            function renderChart(readings) {
+                if (pressureChart) { pressureChart.destroy(); }
+                pressureChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: readings.map(r => r.timestamp.split(',')[0]),
+                        datasets: [{ label: translations[currentLang].chartLabel, data: readings.map(r => r.pressure), borderColor: 'rgba(255, 255, 255, 0.8)', backgroundColor: 'rgba(255, 255, 255, 0.2)', fill: true, tension: 0.2 }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: false } } }
+                });
+            }
+
+            function loadReadingsAndChart() {
+                historyList.innerHTML = '';
+                const readings = JSON.parse(localStorage.getItem('weatherReadings')) || [];
+                if (readings.length === 0) {
+                    historyList.innerHTML = `<p id="no-readings" style="text-align: center;">${translations[currentLang].noReadings}</p>`;
+                    clearHistoryBtn.style.display = 'none';
+                    chartSection.style.display = 'none';
+                } else {
+                    clearHistoryBtn.style.display = 'block';
+                    chartSection.style.display = (readings.length > 1) ? 'block' : 'none';
+                    readings.slice().reverse().forEach((reading, index) => {
+                        const originalIndex = readings.length - 1 - index;
+                        const card = document.createElement('div');
+                        card.className = 'reading-card';
+                        card.dataset.index = originalIndex;
+                        const t = translations[currentLang];
+                        card.innerHTML = `
+                            <span class="delete-icon" title="حذف القراءة">&times;</span>
+                            <div class="reading-header"><span>${reading.location}</span> - <span>${reading.timestamp}</span></div>
+                            <div class="reading-details">
+                                <p><strong>${t.readingCardTemp}:</strong> ${reading.temp} °C</p>
+                                <p><strong>${t.readingCardPressure}:</strong> ${reading.pressure} hPa</p>
+                                <p><strong>${t.readingCardHumidity}:</strong> ${reading.humidity}</p>
+                            </div>`;
+                        historyList.appendChild(card);
+                    });
+                    if (readings.length > 1) renderChart(readings);
+                }
+            }
+            
+            document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+                currentLang = currentLang === 'ar' ? 'en' : 'ar';
+                localStorage.setItem('language', currentLang);
+                updateUIText();
+            });
+
+            document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+                let newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+            
+            clearHistoryBtn.addEventListener('click', () => {
+                if (confirm(translations[currentLang].confirmClear)) {
+                    localStorage.removeItem('weatherReadings');
+                    loadReadingsAndChart();
+                }
+            });
+
+            historyList.addEventListener('click', e => {
+                if (e.target.classList.contains('delete-icon')) {
+                    const indexToDelete = parseInt(e.target.closest('.reading-card').dataset.index, 10);
+                    let readings = JSON.parse(localStorage.getItem('weatherReadings')) || [];
+                    readings.splice(indexToDelete, 1);
+                    localStorage.setItem('weatherReadings', JSON.stringify(readings));
+                    loadReadingsAndChart();
+                }
+            });
+
+            applyTheme(currentTheme);
+            updateUIText();
+        });
+    </script>
+</body>
+</html>

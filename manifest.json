@@ -1,0 +1,21 @@
+{
+  "name": "تطبيق الراصد الذكي للطقس",
+  "short_name": "الراصد الذكي",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0D1B2A",
+  "theme_color": "#415A77",
+  "description": "تطبيق ويب تقدمي لرصد الطقس.",
+  "icons": [
+    {
+      "src": "https://www.pinclipart.com/picdir/middle/525-5252876_weather-icon-png-transparent-background-weather-app-icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://www.pinclipart.com/picdir/middle/525-5252876_weather-icon-png-transparent-background-weather-app-icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">توقعات الطقس</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .forecast-list { width: 100%; flex-grow: 1; overflow-y: auto; }
+        .day-card { background: var(--card-bg-color); backdrop-filter: blur(10px); border-radius: 15px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .day-info { text-align: right; }
+        .day-name { font-size: 1.4rem; font-weight: 700; }
+        .day-desc { font-size: 1rem; opacity: 0.8; }
+        .day-icon { font-size: 3.5rem; }
+        .day-temps { font-size: 1.5rem; font-weight: 700; text-align: left; direction: ltr; }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <div class="theme-switcher"><button id="theme-toggle-btn">🌙</button></div>
+        <div class="language-switcher"><button id="lang-toggle-btn">EN</button></div>
+    </div>
+    <main class="main-content">
+        <h1 id="forecast-title" class="page-header"></h1>
+        <div id="forecast-list" class="forecast-list">
+            <p id="loading-message"></p>
+        </div>
+        <a id="back-button" href="index.html" class="archive-btn" style="text-decoration: none; text-align: center; margin-top: auto; width: 100%; box-sizing: border-box; flex-shrink: 0;"></a>
+    </main>
+    <footer class="app-footer">
+        <p>تم صنع هذا الموقع بواسطة الطالب : سياف عادل البدارين - مدرسة ذكور البخاري الاساسية / السموع</p>
+    </footer>
+    <script src="translations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentLang = localStorage.getItem('language') || 'ar';
+            let currentTheme = localStorage.getItem('theme') || 'light';
+
+            const pageTitle = document.getElementById('page-title');
+            const forecastTitle = document.getElementById('forecast-title');
+            const backButton = document.getElementById('back-button');
+            const loadingMessage = document.getElementById('loading-message');
+            const forecastList = document.getElementById('forecast-list');
+
+            function updateUIText() {
+                const t = translations[currentLang];
+                document.documentElement.lang = currentLang;
+                document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+                pageTitle.textContent = `${t.forecastTitle} - ${t.pageTitle.split(' - ')[0]}`;
+                forecastTitle.textContent = t.forecastTitle;
+                backButton.textContent = t.backButton;
+                loadingMessage.textContent = t.loadingForecast;
+                document.getElementById('lang-toggle-btn').textContent = currentLang === 'ar' ? 'EN' : 'ع';
+            }
+
+            function applyTheme(theme) {
+                const themeBtn = document.getElementById('theme-toggle-btn');
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeBtn.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    themeBtn.textContent = '🌙';
+                }
+            }
+
+            function interpretWeatherCode(code) {
+                const t = translations[currentLang];
+                const iconMap = { 0: "☀️", 1: "🌤️", 2: "⛅️", 3: "☁️", 45: "🌫️", 48: "🌫️", 51: "🌦️", 53: "🌦️", 55: "🌦️", 61: "🌧️", 63: "🌧️", 65: "🌧️", 80: "🌦️", 81: "🌦️", 82: "⛈️", 95: "⛈️" };
+                return { desc: t[`weather_${code}`] || "Unknown", icon: iconMap[code] || "🤷" };
+            }
+
+            async function getForecastData(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
+                try {
+                    const response = await fetch(API_URL);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    displayForecast(data.daily);
+                } catch (error) {
+                    loadingMessage.textContent = translations[currentLang].fetchFail;
+                }
+            }
+
+            function displayForecast(daily) {
+                loadingMessage.style.display = 'none';
+                forecastList.innerHTML = '';
+                daily.time.forEach((date, index) => {
+                    const dayCard = document.createElement('div');
+                    dayCard.className = 'day-card';
+                    const dayName = new Date(date + 'T00:00:00').toLocaleDateString(currentLang, { weekday: 'long' });
+                    const weatherInfo = interpretWeatherCode(daily.weathercode[index]);
+                    const maxTemp = Math.round(daily.temperature_2m_max[index]);
+                    const minTemp = Math.round(daily.temperature_2m_min[index]);
+                    dayCard.innerHTML = `
+                        <div class="day-info"><div class="day-name">${dayName}</div><div class="day-desc">${weatherInfo.desc}</div></div>
+                        <div class="day-icon">${weatherInfo.icon}</div>
+                        <div class="day-temps">${maxTemp}° / ${minTemp}°</div>`;
+                    forecastList.appendChild(dayCard);
+                });
+            }
+            
+            document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+                currentLang = currentLang === 'ar' ? 'en' : 'ar';
+                localStorage.setItem('language', currentLang);
+                updateUIText();
+                if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(getForecastData); }
+            });
+
+            document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+                let newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            applyTheme(currentTheme);
+            updateUIText();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(getForecastData, (error) => {
+                    loadingMessage.textContent = translations[currentLang].fetchFailPermission;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
